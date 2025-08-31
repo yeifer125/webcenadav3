@@ -4,32 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Precios PIMA - Esto solo es un aproximado</title>
+<link rel="icon" href="https://i.postimg.cc/KcNyWSR4/orinoco.jpg" type="image/png">
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 body {
     font-family: 'Inter', sans-serif;
     margin:0; padding:0;
-    background: #121212;
-    color: #f0f0f0;
-    transition: background 0.3s, color 0.3s;
+    background: #f0f0f0;   
+    color: #121212;
+    transition: background 0.6s ease, color 0.6s ease;
 }
 body.dark-mode {
-    background: #f0f0f0;
-    color: #121212;
+    background: #121212;
+    color: #f0f0f0;
 }
 
 header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     background: linear-gradient(135deg, #1f3c88, #4b6cb7);
     color: #fff;
-    padding: 30px 20px;
-    text-align: center;
+    padding: 20px 20px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: background 0.6s ease;
 }
-
+header img {
+    height: 40px;
+    border-radius: 8px;
+}
 header h1 {
     margin:0;
-    font-size:2rem;
+    font-size:1.8rem;
     font-weight:700;
 }
 
@@ -37,26 +45,40 @@ header h1 {
     max-width: 1100px;
     margin: 40px auto;
     padding: 20px;
-    background: #1e1e1e;
+    background: #ffffff;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-    transition: background 0.3s, color 0.3s;
+    transition: background 0.6s ease, color 0.6s ease, transform 0.8s ease, opacity 0.8s ease, box-shadow 0.4s ease;
+    opacity: 0;
+    transform: translateY(50px);
 }
 body.dark-mode .container {
-    background: #ffffff;
-    color: #121212;
+    background: #1e1e1e;
+    color: #f0f0f0;
+}
+
+.container.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 #infoTexto {
-    background: rgba(255,255,255,0.05);
+    background: rgba(0,0,0,0.05);
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 20px;
     font-size: 0.95rem;
     line-height: 1.4;
+    transition: background 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
 }
 body.dark-mode #infoTexto {
-    background: rgba(0,0,0,0.05);
+    background: rgba(255,255,255,0.05);
+}
+/* Hover premium para infoTexto */
+#infoTexto:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
 }
 
 #productoSelect {
@@ -65,15 +87,20 @@ body.dark-mode #infoTexto {
     padding: 12px 15px;
     font-size: 1rem;
     border-radius: 12px;
-    border: 1px solid #444;
-    background: #2c2c2c;
-    color: #fff;
-    transition: all 0.3s;
-}
-body.dark-mode #productoSelect {
+    border: 1px solid #aaa;
     background: #e0e0e0;
     color: #121212;
-    border: 1px solid #aaa;
+    transition: all 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+/* Hover premium para select */
+#productoSelect:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+body.dark-mode #productoSelect {
+    background: #2c2c2c;
+    color: #fff;
+    border: 1px solid #444;
 }
 
 #grafica {
@@ -93,8 +120,10 @@ footer {
     text-align:center;
     margin-top:50px;
     font-size:0.85rem;
-    color:#aaa;
+    color:#555;
+    transition: color 0.6s ease;
 }
+body.dark-mode footer { color:#aaa; }
 
 #bottomButtons {
     position: fixed;
@@ -105,34 +134,73 @@ footer {
     z-index: 1000;
 }
 
-.bottom-btn {
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top:0; left:0; right:0; bottom:0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 30px;
+}
+.slider:before {
+    position: absolute;
+    content: "☀️";
+    height: 24px;
+    width: 24px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .4s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+}
+input:checked + .slider {
+    background-color: #4caf50;
+}
+input:checked + .slider:before {
+    transform: translateX(30px);
+    content:"🌙";
+}
+
+.bottom-btn.home {
     padding: 12px 16px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    transition: all 0.3s;
-}
-.bottom-btn.dark {
-    background: #4caf50;
-    color: #fff;
-}
-.bottom-btn.dark:hover { background:#45a049; }
-.bottom-btn.home {
     background: #1f3c88;
     color: #fff;
+    transition: all 0.3s, transform 0.3s;
 }
-.bottom-btn.home:hover { background:#16326c; }
+.bottom-btn.home:hover { 
+    background:#16326c; 
+    transform: translateY(-2px);
+}
 </style>
 </head>
 <body>
 
 <header>
+    <img src="https://i.postimg.cc/KcNyWSR4/orinoco.jpg" alt="Orinoco">
     <h1>Posibles precios - advertencia no es 100% certero</h1>
 </header>
 
-<div class="container">
-    <!-- Texto explicativo -->
+<div class="container" id="mainContainer">
     <div id="infoTexto">
         Este software estima precios basados en datos históricos del PIMA. 
         Los valores mostrados son aproximaciones y no consideran factores externos 
@@ -148,17 +216,19 @@ footer {
     Datos obtenidos desde <strong>PIMA</strong> | Desarrollado por Yeifer Guevara
 </footer>
 
-<!-- Botones flotantes -->
 <div id="bottomButtons">
-    <button id="darkModeToggle" class="bottom-btn dark">🌙 Dark Mode</button>
+    <label class="switch">
+        <input type="checkbox" id="darkModeToggle">
+        <span class="slider"></span>
+    </label>
     <button id="goHome" class="bottom-btn home">🏠 Página Principal</button>
 </div>
 
 <script>
 const DATA_URL = "https://raw.githubusercontent.com/yeifer125/iadatos/main/historial.json";
 let datosGlobales = [];
+let productoActual = null;
 
-// Convierte fechas DD/MM/YYYY a YYYY-MM-DD
 function parseFecha(fechaStr) {
     const partes = fechaStr.split("/");
     const dia = partes[0].padStart(2,'0');
@@ -190,7 +260,11 @@ async function cargarDatos() {
             select.appendChild(option);
         });
 
-        mostrarGrafica(productos[0]);
+        productoActual = productos[0];
+        mostrarGrafica(productoActual);
+
+        document.getElementById("mainContainer").classList.add("visible");
+
     } catch(err){
         console.error("Error cargando datos:",err);
         mensaje.textContent = "❌ Error al cargar los datos. Intente recargar la página.";
@@ -198,6 +272,7 @@ async function cargarDatos() {
 }
 
 function mostrarGrafica(producto){
+    productoActual = producto;
     const datosProducto = datosGlobales.filter(p=>p.producto===producto);
     if(!datosProducto.length) return;
 
@@ -228,18 +303,17 @@ function mostrarGrafica(producto){
     });
 
     const dark = document.body.classList.contains("dark-mode");
-    const traceHist = {x:fechas,y:moda,type:'scatter',mode:'lines+markers',name:'Histórico',line:{color:dark?'#4caf50':'green'}};
-    const traceFit = {x:fechas,y:yFit,type:'scatter',mode:'lines',name:'Tendencia',line:{dash:'dash',color:dark?'#ffab40':'red'}};
-    const traceFuture = {x:futureFechas,y:futureY,type:'scatter',mode:'lines+markers',name:'Proyección',line:{dash:'dot',color:dark?'#40c4ff':'blue'}};
-    const traceBand = {
-        x:[...futureFechas,...futureFechas.slice().reverse()],
-        y:[...futureY.map(y=>y+sigma), ...futureY.slice().map(y=>y-sigma)],
-        fill:'toself', fillcolor: dark?'rgba(64,196,255,0.2)':'rgba(0,0,255,0.2)',
-        line:{color:'rgba(0,0,0,0)'},
-        name:'Rango estimado'
-    };
+    const data = [
+        {x:fechas, y:moda, type:'scatter', mode:'lines+markers', name:'Histórico', line:{color:dark?'#4caf50':'green'}},
+        {x:fechas, y:yFit, type:'scatter', mode:'lines', name:'Tendencia', line:{dash:'dash', color:dark?'#ffab40':'red'}},
+        {x:futureFechas, y:futureY, type:'scatter', mode:'lines+markers', name:'Proyección', line:{dash:'dot', color:dark?'#40c4ff':'blue'}},
+        {x:[...futureFechas,...futureFechas.slice().reverse()], 
+         y:[...futureY.map(y=>y+sigma), ...futureY.map(y=>y-sigma)], 
+         fill:'toself', fillcolor: dark?'rgba(64,196,255,0.2)':'rgba(0,0,255,0.2)',
+         line:{color:'rgba(0,0,0,0)'},
+         name:'Rango estimado'}
+    ];
 
-    const data = [traceHist, traceFit, traceFuture, traceBand];
     const layout = {
         title:`Precio Moda - ${producto}`,
         plot_bgcolor: dark?'#1e1e1e':'#f0f0f0',
@@ -248,25 +322,19 @@ function mostrarGrafica(producto){
         xaxis:{title:'Fecha', color: dark?'#f0f0f0':'#121212'},
         yaxis:{title:'Precio (Moda)', color: dark?'#f0f0f0':'#121212'},
         margin:{t:50,r:30,l:50,b:100},
+        transition: {duration: 800, easing: 'cubic-in-out'}
     };
-    Plotly.newPlot('grafica',data,layout,{responsive:true});
+
+    Plotly.react('grafica', data, layout, {responsive:true});
 }
 
 document.getElementById("productoSelect").addEventListener("change",(e)=>{mostrarGrafica(e.target.value);});
-document.getElementById("goHome").addEventListener("click", ()=>{ window.location.href = "/"; });
-document.getElementById("darkModeToggle").addEventListener("click", ()=>{
+document.getElementById("goHome").addEventListener("click", ()=>{
+    window.location.href = "https://cenada-precios.onrender.com";
+});
+document.getElementById("darkModeToggle").addEventListener("change", ()=>{
     document.body.classList.toggle("dark-mode");
-    const graficaDiv = document.getElementById("grafica");
-    if(graficaDiv.data){
-        const layout = graficaDiv.layout;
-        const dark = document.body.classList.contains("dark-mode");
-        layout.paper_bgcolor = dark?'#1e1e1e':'#ffffff';
-        layout.plot_bgcolor = dark?'#1e1e1e':'#f0f0f0';
-        layout.font.color = dark?'#f0f0f0':'#121212';
-        layout.xaxis.color = dark?'#f0f0f0':'#121212';
-        layout.yaxis.color = dark?'#f0f0f0':'#121212';
-        Plotly.update(graficaDiv, {}, layout);
-    }
+    if(productoActual) mostrarGrafica(productoActual);
 });
 
 cargarDatos();
